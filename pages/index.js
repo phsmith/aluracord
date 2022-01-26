@@ -21,7 +21,7 @@ function Title(props) {
 }
 
 export default function PaginaInicial() {
-    const [username, setUsername] = React.useState('');
+    const [username, setUsername] = React.useState('phsmith');
     const router = useRouter();
     const username_min_length = 2;
 
@@ -45,7 +45,7 @@ export default function PaginaInicial() {
                         borderRadius: '5px', padding: '32px', margin: '16px',
                         boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
                         backgroundColor: appConfig.theme.colors.neutrals['200'],
-                        opacity: 0.85
+                        opacity: 0.90
                     }}
                 >
                     {/* Formulário */}
