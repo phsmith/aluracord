@@ -1,4 +1,8 @@
 {
+  "name": "aluracord-smith",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
   "dependencies": {
     "@skynexui/components": "^1.23.7",
     "next": "^12.0.8",
@@ -10,9 +14,5 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
-  },
-  "name": "aluracord",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT"
+  }
 }
