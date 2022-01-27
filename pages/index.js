@@ -23,7 +23,7 @@ function Title(props) {
 export default function PaginaInicial() {
     const [username, setUsername] = React.useState('phsmith');
     const router = useRouter();
-    const username_min_length = 2;
+    const usernameMinLength = 2;
 
     return (
         <>
@@ -72,8 +72,8 @@ export default function PaginaInicial() {
                         <TextField
                             value = {username}
                             onChange = {function (event){
-                                const new_username = event.target.value;
-                                setUsername(new_username);
+                                const newUsername = event.target.value;
+                                setUsername(newUsername);
                             }}
                             fullWidth
                             textFieldColors={{
@@ -115,7 +115,7 @@ export default function PaginaInicial() {
                             minHeight: '240px',
                         }}
                     >
-                    {(username && username.length > username_min_length) ? (
+                    {(username && username.length > usernameMinLength) ? (
                         <>
                             <Image
                                 styleSheet={{
