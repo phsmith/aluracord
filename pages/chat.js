@@ -88,7 +88,8 @@ export default function ChatPage() {
                     opacity: 0.95
                 }}
             >
-                <Header />
+                <Header username={logedUser} />
+
                 <Box
                     styleSheet={{
                         position: 'relative',
@@ -163,7 +164,7 @@ export default function ChatPage() {
     )
 }
 
-function Header() {
+function Header(props) {
     return (
         <>
             <Box styleSheet={{
@@ -174,7 +175,29 @@ function Header() {
                 alignItems: 'center',
                 justifyContent: 'space-between'
             }} >
-                <Text variant='heading5'>Chat</Text>
+                <Box>
+                    <Image
+                        styleSheet={{
+                            width: '30px',
+                            height: '30px',
+                            borderRadius: '50%',
+                            display: 'inline-block',
+                            marginRight: '8px',
+                        }}
+                        src={`https://github.com/${props.username}.png`}
+                    />
+                    <Text
+                        variant='heading5'
+                        styleSheet={{
+                            display: 'inline-block',
+                            position: 'relative',
+                            bottom: '10px'
+                        }}
+                    >
+                        {props.username}
+                    </Text>
+                </Box>
+
                 <Button
                     variant='tertiary'
                     colorVariant='neutral'

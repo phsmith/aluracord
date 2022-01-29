@@ -21,7 +21,7 @@ function Title(props) {
 }
 
 export default function PaginaInicial() {
-    const [username, setUsername] = React.useState('phsmith');
+    const [username, setUsername] = React.useState('');
     const router = useRouter();
     const usernameMinLength = 2;
 
@@ -53,7 +53,9 @@ export default function PaginaInicial() {
                         as="form"
                         onSubmit = {function (event) {
                             event.preventDefault();
-                            router.push(`/chat?username=${username}`);
+                            if (username) {
+                                router.push(`/chat?username=${username}`);
+                            }
                         }}
                         styleSheet={{
                             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -70,6 +72,7 @@ export default function PaginaInicial() {
                         </Text>
 
                         <TextField
+                            placeholder='Github username'
                             value = {username}
                             onChange = {function (event){
                                 const newUsername = event.target.value;
