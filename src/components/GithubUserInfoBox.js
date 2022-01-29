@@ -35,14 +35,15 @@ export function GithubUserInfoBox(props) {
             >
                 <Image
                     styleSheet={{
-                        width: '20px',
-                        height: '20px',
+                        width: isOpen ? '100px' : '20px',
+                        height: isOpen ? '100px' : '20px',
                         borderRadius: '50%',
                         display: 'inline-block',
                         marginRight: '8px',
                     }}
                     src={userdata.avatar_url}
-                    onClick={() => setOpenState(!isOpen)}
+                    onMouseOver={() => {setOpenState(true)}}
+                    onMouseOut={() => setOpenState(false)}
                 />
                 {isOpen && (
                     <Box
@@ -58,11 +59,9 @@ export function GithubUserInfoBox(props) {
                                 sm: '290px',
                             },
                             height: '300px',
-                            left: '30px',
                             padding: '16px',
                             boxShadow: 'rgba(4, 4, 5, 0.15) 0px 0px 0px 1px, rgba(0, 0, 0, 0.24) 0px 8px 16px 0px',
                         }}
-                        onClick={() => setOpenState(false)}
                     >
                         <Text
                             styleSheet={{
@@ -80,36 +79,35 @@ export function GithubUserInfoBox(props) {
                         >
                             {Object.keys(userdata).map((key) => {
                                 if (userInfoKeys.includes(key)) {
-                                    console.log(key);
                                     return (
-                                    <Box
-                                        tag="li" key={key}
-                                        styleSheet={{
-                                            padding: '2px'
-                                        }}
-                                    >
-                                        <Text
-                                            tag='span'
+                                        <Box
+                                            tag="li" key={key}
                                             styleSheet={{
-                                                display: 'inline',
-                                                paddingRight: '5px',
-                                                fontSize: '14px',
-                                                fontWeight: 'bold',
-                                                textTransform: 'capitalize'
+                                                padding: '2px'
                                             }}
                                         >
-                                            {key}:
-                                        </Text>
-                                        <Text
-                                            tag='span'
-                                            styleSheet={{
-                                                display: 'inline',
-                                                fontSize: '14px',
-                                            }}
-                                        >
-                                            {userdata[key]}
-                                        </Text>
-                                    </Box>
+                                            <Text
+                                                tag='span'
+                                                styleSheet={{
+                                                    display: 'inline',
+                                                    paddingRight: '5px',
+                                                    fontSize: '14px',
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'capitalize'
+                                                }}
+                                            >
+                                                {key}:
+                                            </Text>
+                                            <Text
+                                                tag='span'
+                                                styleSheet={{
+                                                    display: 'inline',
+                                                    fontSize: '14px',
+                                                }}
+                                            >
+                                                {userdata[key]}
+                                            </Text>
+                                        </Box>
                                     );
                                 }
                             })}
