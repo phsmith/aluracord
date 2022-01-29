@@ -3,6 +3,7 @@ import appConfig from '../config.json';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
 import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
+import { GithubUserInfoBox } from '../src/components/GithubUserInfoBox';
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -212,55 +213,9 @@ function MessagesList(props) {
                                 backgroundColor: appConfig.theme.colors.neutrals[700],
                             }
                         }}
-                        onClick={async () => {
-                            await fetch(`https://api.github.com/users/${message.from}`)
-                                .then((response) => {
-                                    response.json().then((data) => {
-                                        <UserInfo data={data} />
-                                    })
-                                })
-                        }}
                     >
-                        <Box
-                            styleSheet={{
-                                marginBottom: '8px',
-                            }}
-                        >
-                            <Image
-                                styleSheet={{
-                                    width: '20px',
-                                    height: '20px',
-                                    borderRadius: '50%',
-                                    display: 'inline-block',
-                                    marginRight: '8px',
-                                }}
-                                src={`https://github.com/${message.from}.png`}
-                            />
-                            <Text
-                                tag="strong"
-                                styleSheet={{
-                                    display: 'inline-block'
-                                }}
-                            >
-                                {message.from}
-                            </Text>
-                            <Text
-                                styleSheet={{
-                                    fontSize: '10px',
-                                    marginLeft: '8px',
-                                    color: appConfig.theme.colors.neutrals[300],
-                                    display: 'inline-block'
-                                }}
-                                tag="span"
-                            >
-                                {(
-                                    new Date(message.created_at)
-                                        .toLocaleDateString('pt-Br', {
-                                            hour: 'numeric', minute: 'numeric', second: 'numeric'
-                                        })
-                                )}
-                            </Text>
-                        </Box>
+                        <GithubUserInfoBox username={message.from} date={message.created_at} />
+
                         {message.text.startsWith(':sticker:')
                             ? (
                                 <Image
@@ -277,77 +232,6 @@ function MessagesList(props) {
                     </Text>
                 )
             })}
-        </Box>
-    )
-}
-
-function UserInfo(props) {
-    const [isOpen, setOpenState] = React.useState('');
-
-    console.log(props);
-
-    return (
-        <Box
-            styleSheet={{
-                display: 'flex',
-                flexDirection: 'column',
-                borderRadius: '5px',
-                position: 'absolute',
-                backgroundColor: appConfig.theme.colors.neutrals[800],
-                width: {
-                    xs: '200px',
-                    sm: '290px',
-                },
-                height: '300px',
-                left: '30px',
-                bottom: '30px',
-                padding: '16px',
-                boxShadow: 'rgba(4, 4, 5, 0.15) 0px 0px 0px 1px, rgba(0, 0, 0, 0.24) 0px 8px 16px 0px',
-            }}
-            // onClick={() => setOpenState(false)}
-        >
-            <Text
-                styleSheet={{
-                    color: appConfig.theme.colors.neutrals["000"],
-                    fontWeight: 'bold',
-                }}
-            >
-                User Info
-            </Text>
-            <Box
-                tag="ul"
-                styleSheet={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'space-between',
-                    flex: 1,
-                    paddingTop: '16px',
-                    overflowX: 'hidden',
-                    overflowY: 'scroll',
-                }}
-            >
-                {Object.keys(props.data).map((key) => {
-                    <Text
-                        tag="li" key={key}
-                        styleSheet={{
-                            width: '50%',
-                            borderRadius: '5px',
-                            padding: '10px',
-                            focus: {
-                                backgroundColor: appConfig.theme.colors.neutrals[600],
-                            },
-                            hover: {
-                                backgroundColor: appConfig.theme.colors.neutrals[600],
-                            }
-                        }}
-                    >
-                        <Text>
-                            {`${key}: ${data[key]}`}
-                        </Text>
-                    </Text>
-                })}
-            </Box>
-            )
         </Box>
     )
 }
