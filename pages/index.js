@@ -48,12 +48,12 @@ export default function PaginaInicial() {
                         opacity: 0.90
                     }}
                 >
-                    {/* Formulário */}
+                    {/* Form */}
                     <Box
                         as="form"
                         onSubmit = {function (event) {
                             event.preventDefault();
-                            router.push('/chat');
+                            router.push(`/chat?username=${username}`);
                         }}
                         styleSheet={{
                             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -96,7 +96,7 @@ export default function PaginaInicial() {
                             }}
                         />
                     </Box>
-                    {/* Formulário */}
+                    {/* Form */}
 
 
                     {/* Photo Area */}
@@ -105,6 +105,7 @@ export default function PaginaInicial() {
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
+                            minWidth: '200px',
                             maxWidth: '200px',
                             padding: '16px',
                             backgroundColor: appConfig.theme.colors.neutrals[300],

@@ -1,24 +1,65 @@
-import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { useRouter } from 'next/router';
+import { createClient } from '@supabase/supabase-js';
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
+import { Box, Text, TextField, Image, Button } from '@skynexui/components';
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_KEY;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function messagesListener(addMessage) {
+    return supabaseClient
+        .from('messages')
+        .on('INSERT', (response) => {
+            addMessage(response.new);
+        })
+        .subscribe();
+}
 
 export default function ChatPage() {
+    const router = useRouter();
+    const logedUser = router.query.username;
     const [messageTyped, setMessageTyped] = React.useState('');
     const [messagesList, setMessagesList] = React.useState([]);
+
+    React.useEffect(() => {
+        supabaseClient
+            .from('messages')
+            .select('*')
+            .order('id', { ascending: false })
+            .then(({ data }) => {
+                setMessagesList(data);
+            });
+
+        const subscription = messagesListener((newMessage) => {
+            setMessagesList((currentMessagesList) => {
+                return [
+                    newMessage,
+                    ...currentMessagesList,
+                ]
+            });
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        }
+    }, []);
 
     function handleNewMessage(newMessage) {
         if (newMessage) {
             const message = {
-                id: messagesList.length + 1,
-                dateTime: (new Date().toLocaleDateString('pt-Br', {hour: 'numeric', minute: 'numeric', second: 'numeric'})),
-                from: "Smith",
+                from: logedUser,
                 text: newMessage
             }
 
-            setMessagesList([
-                message,
-                ...messagesList
-            ])
+            supabaseClient
+                .from('messages')
+                .insert([message])
+                .then((data) => {
+                    console.log(data)
+                });
 
             setMessageTyped('')
         }
@@ -69,6 +110,12 @@ export default function ChatPage() {
                             alignItems: 'center',
                         }}
                     >
+                        <ButtonSendSticker
+                            onStickerClick={(sticker) => {
+                                handleNewMessage(':sticker: ' + sticker);
+                            }}
+                        />
+
                         <TextField
                             value={messageTyped}
                             onChange={(event) => {
@@ -102,10 +149,10 @@ export default function ChatPage() {
                                 handleNewMessage(messageTyped);
                             }}
                             styleSheet={{
-                                width: '5%',
+                                minWidth: '5%',
                                 padding: '11px 8px',
                                 marginRight: '12px',
-                                marginBottom: '10px'
+                                marginBottom: '8px'
                             }}
                         />
                     </Box>
@@ -118,10 +165,15 @@ export default function ChatPage() {
 function Header() {
     return (
         <>
-            <Box styleSheet={{ width: '100%', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
-                <Text variant='heading5'>
-                    Chat
-                </Text>
+            <Box styleSheet={{
+                color: appConfig.theme.colors.neutrals[500],
+                width: '100%',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+            }} >
+                <Text variant='heading5'>Chat</Text>
                 <Button
                     variant='tertiary'
                     colorVariant='neutral'
@@ -160,6 +212,14 @@ function MessagesList(props) {
                                 backgroundColor: appConfig.theme.colors.neutrals[700],
                             }
                         }}
+                        onClick={async () => {
+                            await fetch(`https://api.github.com/users/${message.from}`)
+                                .then((response) => {
+                                    response.json().then((data) => {
+                                        <UserInfo data={data} />
+                                    })
+                                })
+                        }}
                     >
                         <Box
                             styleSheet={{
@@ -174,9 +234,14 @@ function MessagesList(props) {
                                     display: 'inline-block',
                                     marginRight: '8px',
                                 }}
-                                src={`https://github.com/phsmith.png`}
+                                src={`https://github.com/${message.from}.png`}
                             />
-                            <Text tag="strong">
+                            <Text
+                                tag="strong"
+                                styleSheet={{
+                                    display: 'inline-block'
+                                }}
+                            >
                                 {message.from}
                             </Text>
                             <Text
@@ -184,16 +249,105 @@ function MessagesList(props) {
                                     fontSize: '10px',
                                     marginLeft: '8px',
                                     color: appConfig.theme.colors.neutrals[300],
+                                    display: 'inline-block'
                                 }}
                                 tag="span"
                             >
-                                {message.dateTime}
+                                {(
+                                    new Date(message.created_at)
+                                        .toLocaleDateString('pt-Br', {
+                                            hour: 'numeric', minute: 'numeric', second: 'numeric'
+                                        })
+                                )}
                             </Text>
                         </Box>
-                        {message.text}
+                        {message.text.startsWith(':sticker:')
+                            ? (
+                                <Image
+                                    src={message.text.replace(':sticker:', '')}
+                                    styleSheet={{
+                                        width: '150px',
+                                        height: '150px'
+                                    }}
+                                />
+                            )
+                            : (
+                                message.text
+                            )}
                     </Text>
                 )
             })}
+        </Box>
+    )
+}
+
+function UserInfo(props) {
+    const [isOpen, setOpenState] = React.useState('');
+
+    console.log(props);
+
+    return (
+        <Box
+            styleSheet={{
+                display: 'flex',
+                flexDirection: 'column',
+                borderRadius: '5px',
+                position: 'absolute',
+                backgroundColor: appConfig.theme.colors.neutrals[800],
+                width: {
+                    xs: '200px',
+                    sm: '290px',
+                },
+                height: '300px',
+                left: '30px',
+                bottom: '30px',
+                padding: '16px',
+                boxShadow: 'rgba(4, 4, 5, 0.15) 0px 0px 0px 1px, rgba(0, 0, 0, 0.24) 0px 8px 16px 0px',
+            }}
+            // onClick={() => setOpenState(false)}
+        >
+            <Text
+                styleSheet={{
+                    color: appConfig.theme.colors.neutrals["000"],
+                    fontWeight: 'bold',
+                }}
+            >
+                User Info
+            </Text>
+            <Box
+                tag="ul"
+                styleSheet={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-between',
+                    flex: 1,
+                    paddingTop: '16px',
+                    overflowX: 'hidden',
+                    overflowY: 'scroll',
+                }}
+            >
+                {Object.keys(props.data).map((key) => {
+                    <Text
+                        tag="li" key={key}
+                        styleSheet={{
+                            width: '50%',
+                            borderRadius: '5px',
+                            padding: '10px',
+                            focus: {
+                                backgroundColor: appConfig.theme.colors.neutrals[600],
+                            },
+                            hover: {
+                                backgroundColor: appConfig.theme.colors.neutrals[600],
+                            }
+                        }}
+                    >
+                        <Text>
+                            {`${key}: ${data[key]}`}
+                        </Text>
+                    </Text>
+                })}
+            </Box>
+            )
         </Box>
     )
 }
