@@ -8,7 +8,6 @@ export function GithubUserInfoBox(props) {
     const userInfoKeys = [
         'name',
         'location',
-        'email',
         'bio',
         'public_repos',
         'public_gists',
