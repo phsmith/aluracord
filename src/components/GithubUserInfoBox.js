@@ -1,6 +1,6 @@
 import React from 'react';
 import appConfig from '../../config.json';
-import { Box, Button, Text, Image } from '@skynexui/components';
+import { Box, Text, Icon, Image } from '@skynexui/components';
 
 export function GithubUserInfoBox(props) {
     const [isOpen, setOpenState] = React.useState(false);
@@ -42,8 +42,7 @@ export function GithubUserInfoBox(props) {
                         marginRight: '8px',
                     }}
                     src={userdata.avatar_url}
-                    onMouseOver={() => {setOpenState(true)}}
-                    onMouseOut={() => setOpenState(false)}
+                    onClick={() => {setOpenState(!isOpen)}}
                 />
                 {isOpen && (
                     <Box
@@ -70,6 +69,15 @@ export function GithubUserInfoBox(props) {
                             }}
                         >
                             Github Info
+                            <Icon
+                                name='FaWindowClose'
+                                styleSheet={{
+                                    position: 'absolute',
+                                    right: '10px',
+                                    top: '10px'
+                                }}
+                                onClick={() => {setOpenState(false)}}
+                            />
                         </Text>
                         <Box
                             tag="ul"
