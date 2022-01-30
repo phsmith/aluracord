@@ -164,17 +164,15 @@ export default function ChatPage() {
                             }}
                         />
                         <Button
-                            label='Send'
+                            iconName='arrowRight'
                             colorVariant='positive'
                             size='lg'
                             onClick={() => {
                                 handleNewMessage(messageTyped);
                             }}
                             styleSheet={{
-                                minWidth: '5%',
-                                padding: '11px 8px',
-                                marginRight: '12px',
-                                marginBottom: '8px'
+                                minWidth: '50px',
+                                marginBottom: '10px'
                             }}
                         />
                     </Box>

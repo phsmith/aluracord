@@ -13,9 +13,10 @@ export function ButtonSendSticker(props) {
     >
       <Button
         colorVariant='warning'
+        buttonColors='primary'
+        variant='tertiary'
+        rounded='full'
         styleSheet={{
-          borderRadius: '50%',
-          padding: '0 3px 0 0',
           minWidth: '50px',
           minHeight: '50px',
           fontSize: '20px',
@@ -27,13 +28,9 @@ export function ButtonSendSticker(props) {
           justifyContent: 'center',
           color: 'yellow',
           backgroundColor: appConfig.theme.colors.neutrals[400],
-          // filter: isOpen ? 'grayscale(1)' : 'grayscale(0)',
+          filter: isOpen ? 'grayscale(1)' : 'grayscale(0)',
           hover: {
-            // filter: grayscale(1),
             backgroundColor: appConfig.theme.colors.neutrals[300]
-          },
-          focus: {
-            backgroundColor: appConfig.theme.colors.neutrals[400]
           }
         }}
         label="😋"
