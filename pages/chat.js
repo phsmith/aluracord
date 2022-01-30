@@ -9,12 +9,22 @@ import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_KEY;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseTable = 'messages';
 
 function messagesListener(addMessage) {
     return supabaseClient
-        .from('messages')
+        .from(supabaseTable)
         .on('INSERT', (response) => {
             addMessage(response.new);
+        })
+        .subscribe();
+}
+
+function messageDelete(removeMessage) {
+    return supabaseClient
+        .from(supabaseTable)
+        .on('DELETE', (response) => {
+            removeMessage(response.old);
         })
         .subscribe();
 }
@@ -27,7 +37,7 @@ export default function ChatPage() {
 
     React.useEffect(() => {
         supabaseClient
-            .from('messages')
+            .from(supabaseTable)
             .select('*')
             .order('id', { ascending: false })
             .then(({ data }) => {
@@ -43,8 +53,18 @@ export default function ChatPage() {
             });
         });
 
+        const subscription_delete = messageDelete((oldMessage) => {
+            setMessagesList((currentMessagesList) => {
+                const updatedMessagesList = currentMessagesList.filter((message) => message.id !== oldMessage.id);
+                return [
+                    ...updatedMessagesList
+                ]
+            })
+        });
+
         return () => {
             subscription.unsubscribe();
+            subscription_delete.unsubscribe();
         }
     }, []);
 
@@ -56,7 +76,7 @@ export default function ChatPage() {
             }
 
             supabaseClient
-                .from('messages')
+                .from(supabaseTable)
                 .insert([message])
                 .then((data) => {
                     console.log(data)
@@ -216,6 +236,7 @@ function MessagesList(props) {
             styleSheet={{
                 overflowX: 'hidden',
                 overflowY: 'scroll',
+                position: 'relative',
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 flex: 1,
@@ -237,7 +258,19 @@ function MessagesList(props) {
                             }
                         }}
                     >
-                        <GithubUserInfoBox username={message.from} date={message.created_at} />
+                        <GithubUserInfoBox
+                            username={message.from}
+                            messageDate={message.created_at}
+                            onTrashClick={async () => {
+                                await supabaseClient
+                                    .from(supabaseTable)
+                                    .delete()
+                                    .match({ id: message.id })
+                                    .then((data) => {
+                                        console.log(data);
+                                    })
+                            }}
+                        />
 
                         {message.text.startsWith(':sticker:')
                             ? (

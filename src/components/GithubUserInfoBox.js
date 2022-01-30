@@ -31,8 +31,21 @@ export function GithubUserInfoBox(props) {
             <Box
                 styleSheet={{
                     marginBottom: '8px',
+                    position: 'relative'
                 }}
             >
+                <Icon
+                    name='FaTrash'
+                    styleSheet={{
+                        position: 'absolute',
+                        right: '10px',
+                    }}
+                    onClick={() => {
+                        if (Boolean(props.onTrashClick)) {
+                          props.onTrashClick();
+                        }
+                      }}
+                />
                 <Image
                     styleSheet={{
                         width: isOpen ? '100px' : '20px',
@@ -42,7 +55,7 @@ export function GithubUserInfoBox(props) {
                         marginRight: '8px',
                     }}
                     src={userdata.avatar_url}
-                    onClick={() => {setOpenState(!isOpen)}}
+                    onClick={() => { setOpenState(!isOpen) }}
                 />
                 {isOpen && (
                     <Box
@@ -51,6 +64,8 @@ export function GithubUserInfoBox(props) {
                             flexDirection: 'column',
                             borderRadius: '5px',
                             position: 'absolute',
+                            left: '100px',
+                            top: '0px',
                             zIndex: 1,
                             backgroundColor: appConfig.theme.colors.neutrals[800],
                             width: {
@@ -76,7 +91,7 @@ export function GithubUserInfoBox(props) {
                                     right: '10px',
                                     top: '10px'
                                 }}
-                                onClick={() => {setOpenState(false)}}
+                                onClick={() => { setOpenState(false) }}
                             />
                         </Text>
                         <Box
@@ -140,7 +155,7 @@ export function GithubUserInfoBox(props) {
                     tag="span"
                 >
                     {(
-                        new Date(props.date)
+                        new Date(props.messageDate)
                             .toLocaleDateString('pt-Br', {
                                 hour: 'numeric', minute: 'numeric', second: 'numeric'
                             })
