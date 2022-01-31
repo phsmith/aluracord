@@ -1,6 +1,6 @@
 import React from 'react';
 import appConfig from '../../config.json';
-import { Box, Button, Text, Image } from '@skynexui/components';
+import { Box, Button, Text, Icon, Image } from '@skynexui/components';
 
 export function ButtonSendSticker(props) {
   const [isOpen, setOpenState] = React.useState('');
@@ -15,10 +15,9 @@ export function ButtonSendSticker(props) {
         colorVariant='warning'
         buttonColors='primary'
         variant='tertiary'
-        rounded='full'
         styleSheet={{
-          minWidth: '50px',
-          minHeight: '50px',
+          minWidth: '45px',
+          minHeight: '42px',
           fontSize: '20px',
           marginBottom: '10px',
           marginRight: '10px',
@@ -27,10 +26,9 @@ export function ButtonSendSticker(props) {
           alignItems: 'center',
           justifyContent: 'center',
           color: 'yellow',
-          backgroundColor: appConfig.theme.colors.neutrals[400],
-          filter: isOpen ? 'grayscale(1)' : 'grayscale(0)',
+          backgroundColor: appConfig.theme.colors.neutrals[800],
           hover: {
-            backgroundColor: appConfig.theme.colors.neutrals[300]
+            backgroundColor: appConfig.theme.colors.neutrals[400]
           }
         }}
         label="😋"
@@ -56,6 +54,15 @@ export function ButtonSendSticker(props) {
           }}
           onClick={() => setOpenState(false)}
         >
+          <Icon
+            name='FaWindowClose'
+            styleSheet={{
+              position: 'absolute',
+              right: '10px',
+              top: '10px'
+            }}
+            onClick={() => { setOpenState(false) }}
+          />
           <Text
             styleSheet={{
               color: appConfig.theme.colors.neutrals["000"],
