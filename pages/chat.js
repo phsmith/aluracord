@@ -11,20 +11,14 @@ const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_KEY;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 const supabaseTable = 'messages';
 
-function messagesListener(addMessage) {
+function messagesListener(manageMessage) {
     return supabaseClient
         .from(supabaseTable)
         .on('INSERT', (response) => {
-            addMessage(response.new);
+            manageMessage(response.new);
         })
-        .subscribe();
-}
-
-function messageDelete(removeMessage) {
-    return supabaseClient
-        .from(supabaseTable)
         .on('DELETE', (response) => {
-            removeMessage(response.old);
+            manageMessage(response.old);
         })
         .subscribe();
 }
@@ -44,27 +38,24 @@ export default function ChatPage() {
                 setMessagesList(data);
             });
 
-        const subscription = messagesListener((newMessage) => {
+        const subscription = messagesListener((output) => {
             setMessagesList((currentMessagesList) => {
-                return [
-                    newMessage,
-                    ...currentMessagesList,
-                ]
+                if (Object.keys(output).length === 1) {
+                    const updatedMessagesList = currentMessagesList.filter((message) => message.id !== output.id);
+                    return [
+                        ...updatedMessagesList
+                    ]
+                } else {
+                    return [
+                        output,
+                        ...currentMessagesList,
+                    ]
+                }
             });
-        });
-
-        const subscription_delete = messageDelete((oldMessage) => {
-            setMessagesList((currentMessagesList) => {
-                const updatedMessagesList = currentMessagesList.filter((message) => message.id !== oldMessage.id);
-                return [
-                    ...updatedMessagesList
-                ]
-            })
         });
 
         return () => {
             subscription.unsubscribe();
-            subscription_delete.unsubscribe();
         }
     }, []);
 
